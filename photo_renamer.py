@@ -8,13 +8,31 @@ import shutil
 import random
 from datetime import datetime
 
+# Выбр профиля
+# lss_linux
+# lsv_windows
+profile = 'lss_linux'
+
 ### НАСТРОЙКИ ###
-# Исходная директория
-inputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/input'
-# Целевая директория
-outputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/output/'
-# Путь для файла логирования
-logFilePath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/log.txt'
+# Настройки в зависимости от профиля
+if profile == 'lsv_windows':
+    # Исходная директория
+    inputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/input'
+    # Целевая директория
+    outputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/output/'
+    # Путь для файла логирования
+    logFilePath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/log.txt'
+    # сухой запуск (генерирует план действий, но не производит копирование)
+
+if profile == 'lss_linux':
+    # Исходная директория
+    inputPath = 'C:\\Users\\Admin\\Desktop\\photo_renamer\\input\\'
+    # Целевая директория
+    outputPath = 'C:\\Users\\Admin\\Desktop\\photo_renamer\\output\\'
+    # Путь для файла логирования
+    logFilePath = 'C:\\Users\\Admin\\Desktop\\photo_renamer\\log.txt'
+
+# Общие настройки
 # сухой запуск (генерирует план действий, но не производит копирование)
 dryRun = False
 # очистить целевую директорию?
@@ -28,9 +46,9 @@ def logging(message):
     now = datetime.now()
     outputMessage = now.strftime("%d/%m/%Y %H:%M:%S") + " " + message
     print(outputMessage)
-    logFile = open(logFilePath, "a")
+   #  logFile = open(logFilePath, "a")
     logFile.write(outputMessage + '\n')
-    logFile.close()
+   #  logFile.close()
 
 # функция получения даты создания фото из EXIF
 def get_date_taken(path):
@@ -43,7 +61,7 @@ def get_date_taken(path):
             noExifFileDate = os.path.getmtime(path)
             noExifFileDt = datetime.fromtimestamp(noExifFileDate)
             noExifFileCopyNumber = noExifFileCopyNumber + 1
-            noExifFileName = (str(noExifFileDt)).replace("-", ":") + '_NO_EXIF_DATA_(' + str(noExifFileCopyNumber) + ')'
+            noExifFileName = (str(noExifFileDt)).replace("-", ".") + '_NO_EXIF(' + str(noExifFileCopyNumber) + ')'
             logging('Файлу без EXIF даты присвоено имя на основе последней даты изменения: ' + noExifFileName + '.JPG')
             return noExifFileName 
             # initialNoExifFilename = outputPath + 'NO_EXIF_DATA'
@@ -75,14 +93,14 @@ def recursive_file_check(fileName):
     initialFileName = fileName
     while True:
         # Проверяем, существует ли такой целевой файл
-        if os.path.isfile(fileName + '.JPG'):
+        if os.path.isfile(fileName + '.jpg'):
             # Файл существует, переименовываем
             logging('Файл ' + fileName + '.JPG существует, генерируем новое имя')
             fileName = initialFileName + '_(' + str(fileCopyNumber) + ')'
             fileCopyNumber = fileCopyNumber + 1
         else:
             # Файл не существует, имя подобрано
-            return fileName + '.JPG'
+            return fileName + '.jpg'
             break
 
 # Инициализация лога
@@ -90,6 +108,9 @@ logFile = open(logFilePath, "w")
 now = datetime.now()
 logFile.write(now.strftime("%d/%m/%Y %H:%M:%S") + " Начата запись лога. Сухой запуск: " + str(dryRun) + '\n')
 logFile.close()
+
+# Открываем логфайл на дозапись
+logFile = open(logFilePath, "a")
 
 # Получаем список файлов на вход в объект inputFolder
 inputFolder = pathlib.Path(inputPath)
@@ -117,7 +138,7 @@ for inputFile in inputFolder.rglob("*"):
         logging('Найдена директория: ' + fullInputFilePath)
     else:
         # Это файл, обрабатываем
-        exifDate = (get_date_taken(fullInputFilePath)).replace(" ", "_")
+        exifDate = (get_date_taken(fullInputFilePath)).replace(" ", "_").replace(":", ".")
         
         # Получаем новое имя
         logging('Найден файл: ' + fullInputFilePath + ' EXIF Date:' + exifDate)
@@ -128,3 +149,5 @@ for inputFile in inputFolder.rglob("*"):
         if not(dryRun):
             shutil.copyfile(inputFile, newName)
 
+# Закрываем логфайл
+logFile.close()
