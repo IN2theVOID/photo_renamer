@@ -21,7 +21,7 @@ if profile == 'lss_linux':
     # Целевая директория
     outputPath = '/home/in2thevoid/Документы/git/photo_renamer/output/'
     # Путь для файла логирования
-    logFilePath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/log.txt'
+    logFilePath = '/home/in2thevoid/Документы/git/photo_renamer/log.txt'
 
 if profile == 'lsv_windows':
     # Исходная директория
