@@ -37,8 +37,14 @@ dryRun = False
 # Счистить целевую директорию?
 cleanOutputFolder = True
 
+# Настройки замены
+noExifReplace1 = [' ','_']
+noExifReplace2 = [':','.']
+exifReplace1 = [' ','_']
+exifReplace2 = [':','.']
+
 # Инициализация стартовых параметров
-noExifFileCopyNumber = 0
+#noExifFileCopyNumber = 0
 
 # функция логирования и вывода
 def logging(message):
@@ -51,7 +57,7 @@ def logging(message):
 
 # Функция получения даты создания фото из EXIF
 def get_date_taken(path, extension):
-    global noExifFileCopyNumber
+    #global noExifFileCopyNumber
     try:
         exif = Image.open(path)._getexif()
         if not exif:
@@ -59,28 +65,27 @@ def get_date_taken(path, extension):
             logging('У файла ' + path + ' отсутсвует EXIF дата')
             noExifFileDate = os.path.getmtime(path)
             noExifFileDt = datetime.fromtimestamp(noExifFileDate)
-            noExifFileCopyNumber = noExifFileCopyNumber + 1
-            noExifFileName = (str(noExifFileDt)).replace("-", ".") + '_NO_EXIF(' + str(noExifFileCopyNumber) + ')'
-            logging('Файлу без EXIF даты присвоено имя на основе последней даты изменения: ' + noExifFileName + extension)
-            return noExifFileName 
-            # initialNoExifFilename = outputPath + 'NO_EXIF_DATA'
-            # noExifFileName = initialNoExifFilename
-            #logging('Предлагаемое имя ' + noExifFileName + '.JPG') 
-            # while True:
-            #     # Рекурсивно проверяем, существует ли такой noexif файл
-            #     #logging('Проверяю имя:' + noExifFileName + '_('+ str(noExifFileCopyNumber) + ').JPG')
-            #     if os.path.isfile(noExifFileName + '_('+ str(noExifFileCopyNumber) + ').JPG'):
-            #         # Файл noexif существует, переименовываем
-            #         logging('Файл' + noExifFileName + '_('+ str(noExifFileCopyNumber) + ').JPG существует, генерируем новое имя')
-            #         noExifFileCopyNumber = noExifFileCopyNumber + 1
-            #         logging('Проверяю имя ' + noExifFileName + '_('+ str(noExifFileCopyNumber) + ').JPG')
-            #     else:
-            #         # Файл noexif не существует, имя подобрано, возвращаем его
-            #         logging('Имя noexif файла подобрано: ' + 'NO_EXIF_DATA_(' + str(noExifFileCopyNumber) + ')')
-            #         return 'NO_EXIF_DATA_(' + str(noExifFileCopyNumber) + ')'
-            #         break
-        # Возвращаем exif дату
-        return exif[36867]
+            noExifFileCopyNumber = 0
+            initialNoExifFilename = outputPath + str(noExifFileDt) + '_NO_EXIF_DATA'
+            noExifFileName = initialNoExifFilename
+            logging('Предлагаемое имя ' + initialNoExifFilename + extension) 
+            while True:
+                # Рекурсивно проверяем, существует ли такой noexif файл
+                logging('Проверяю имя:' + noExifFileName + '_('+ str(noExifFileCopyNumber) + ')' + extension)
+                if os.path.isfile((noExifFileName.replace(noExifReplace1[0], noExifReplace1[1]).replace(noExifReplace2[0], noExifReplace2[1]) + '_('+ str(noExifFileCopyNumber) + ')') + extension):
+                    # Файл noexif существует, переименовываем
+                    logging('Файл' + noExifFileName.replace(noExifReplace1[0], noExifReplace1[1]).replace(noExifReplace2[0], noExifReplace2[1]) + '_('+ str(noExifFileCopyNumber) + ')' + extension + ' существует, генерируем новое имя')
+                    noExifFileCopyNumber = noExifFileCopyNumber + 1
+                    logging('Проверяю имя ' + noExifFileName.replace(noExifReplace1[0], noExifReplace1[1]).replace(noExifReplace2[0], noExifReplace2[1]) + '_('+ str(noExifFileCopyNumber) + ')' + extension)
+                else:
+                    # Файл noexif не существует, имя подобрано, возвращаем его
+                    noExifFilenameToReturn = (str(noExifFileDt) + '_NO_EXIF_DATA_(' + str(noExifFileCopyNumber) + ')').replace(noExifReplace1[0], noExifReplace1[1]).replace(noExifReplace2[0], noExifReplace2[1])
+                    logging('Имя noexif файла подобрано: ' + noExifFilenameToReturn)
+                    return noExifFilenameToReturn 
+                    break
+        if exif:
+            # Возвращаем exif дату
+            return exif[36867].replace(exifReplace1[0], exifReplace1[1]).replace(exifReplace2[0], exifReplace2[1])
     except:
         # Ошибка обработки файла
         logging('Не получилось обработать ' + path)
@@ -137,7 +142,7 @@ for inputFile in inputFolder.rglob("*"):
         logging('Найдена директория: ' + fullInputFilePath)
     else:
         # Это файл, обрабатываем
-        exifDate = (get_date_taken(fullInputFilePath, fileExtension)).replace(" ", "_").replace(":", ".")
+        exifDate = (get_date_taken(fullInputFilePath, fileExtension))
         
         # Получаем новое имя
         logging('Найден файл: ' + fullInputFilePath + ' EXIF Date:' + exifDate)
