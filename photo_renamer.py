@@ -50,7 +50,7 @@ def logging(message):
    #  logFile.close()
 
 # Функция получения даты создания фото из EXIF
-def get_date_taken(path):
+def get_date_taken(path, extension):
     global noExifFileCopyNumber
     try:
         exif = Image.open(path)._getexif()
@@ -61,7 +61,7 @@ def get_date_taken(path):
             noExifFileDt = datetime.fromtimestamp(noExifFileDate)
             noExifFileCopyNumber = noExifFileCopyNumber + 1
             noExifFileName = (str(noExifFileDt)).replace("-", ".") + '_NO_EXIF(' + str(noExifFileCopyNumber) + ')'
-            logging('Файлу без EXIF даты присвоено имя на основе последней даты изменения: ' + noExifFileName + '.JPG')
+            logging('Файлу без EXIF даты присвоено имя на основе последней даты изменения: ' + noExifFileName + extension)
             return noExifFileName 
             # initialNoExifFilename = outputPath + 'NO_EXIF_DATA'
             # noExifFileName = initialNoExifFilename
@@ -87,19 +87,19 @@ def get_date_taken(path):
         return 'ERROR'
 
 # Рекурсивная функция проверки существования файла
-def recursive_file_check(fileName):
+def recursive_file_check(fileName, extension):
     fileCopyNumber = 0
     initialFileName = fileName
     while True:
         # Проверяем, существует ли такой целевой файл
-        if os.path.isfile(fileName + '.jpg'):
+        if os.path.isfile(fileName + extension):
             # Файл существует, переименовываем
-            logging('Файл ' + fileName + '.JPG существует, генерируем новое имя')
+            logging('Файл ' + fileName + extension + ' существует, генерируем новое имя')
             fileName = initialFileName + '_(' + str(fileCopyNumber) + ')'
             fileCopyNumber = fileCopyNumber + 1
         else:
             # Файл не существует, имя подобрано
-            return fileName + '.jpg'
+            return fileName + extension
             break
 
 # Инициализация лога
@@ -130,18 +130,18 @@ if cleanOutputFolder and not(dryRun):
 # Цикл для файлов на вход
 for inputFile in inputFolder.rglob("*"):
     fullInputFilePath = str(inputFile)
-    
+    fileExtension = pathlib.Path(fullInputFilePath).suffix
     # Проверяем, директория или файл
     if os.path.isdir(fullInputFilePath):
         # Это директория, пропускаем
         logging('Найдена директория: ' + fullInputFilePath)
     else:
         # Это файл, обрабатываем
-        exifDate = (get_date_taken(fullInputFilePath)).replace(" ", "_").replace(":", ".")
+        exifDate = (get_date_taken(fullInputFilePath, fileExtension)).replace(" ", "_").replace(":", ".")
         
         # Получаем новое имя
         logging('Найден файл: ' + fullInputFilePath + ' EXIF Date:' + exifDate)
-        newName = recursive_file_check(outputPath + exifDate)
+        newName = recursive_file_check(outputPath + exifDate, fileExtension)
         logging('Целевое имя: ' + newName)
 
         # Копируем
