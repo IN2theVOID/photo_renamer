@@ -22,7 +22,6 @@ if profile == 'lsv_windows':
     outputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/output/'
     # Путь для файла логирования
     logFilePath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/log.txt'
-    # сухой запуск (генерирует план действий, но не производит копирование)
 
 if profile == 'lss_linux':
     # Исходная директория
@@ -33,9 +32,9 @@ if profile == 'lss_linux':
     logFilePath = 'C:\\Users\\Admin\\Desktop\\photo_renamer\\log.txt'
 
 # Общие настройки
-# сухой запуск (генерирует план действий, но не производит копирование)
+# Сухой запуск (генерирует план действий, но не производит копирование)
 dryRun = False
-# очистить целевую директорию?
+# Счистить целевую директорию?
 cleanOutputFolder = True
 
 # Инициализация стартовых параметров
@@ -50,7 +49,7 @@ def logging(message):
     logFile.write(outputMessage + '\n')
    #  logFile.close()
 
-# функция получения даты создания фото из EXIF
+# Функция получения даты создания фото из EXIF
 def get_date_taken(path):
     global noExifFileCopyNumber
     try:
