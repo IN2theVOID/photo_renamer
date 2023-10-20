@@ -15,7 +15,7 @@ profile = 'lss_linux'
 
 ### НАСТРОЙКИ ###
 # Настройки в зависимости от профиля
-if profile == 'lsv_windows':
+if profile == 'lss_linux':
     # Исходная директория
     inputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/input'
     # Целевая директория
@@ -23,7 +23,7 @@ if profile == 'lsv_windows':
     # Путь для файла логирования
     logFilePath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/log.txt'
 
-if profile == 'lss_linux':
+if profile == 'lsv_windows':
     # Исходная директория
     inputPath = 'C:\\Users\\Admin\\Desktop\\photo_renamer\\input\\'
     # Целевая директория
