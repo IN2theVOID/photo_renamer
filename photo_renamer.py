@@ -17,9 +17,9 @@ profile = 'lss_linux'
 # Настройки в зависимости от профиля
 if profile == 'lss_linux':
     # Исходная директория
-    inputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/input'
+    inputPath = '/home/in2thevoid/Документы/git/photo_renamer/input'
     # Целевая директория
-    outputPath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/output/'
+    outputPath = '/home/in2thevoid/Документы/git/photo_renamer/output/'
     # Путь для файла логирования
     logFilePath = '/home/in2thevoid/Рабочий стол/Data/photo_renamer/log.txt'
 
