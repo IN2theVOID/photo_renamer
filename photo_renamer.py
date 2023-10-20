@@ -57,7 +57,6 @@ def logging(message):
 
 # Функция получения даты создания фото из EXIF
 def get_date_taken(path, extension):
-    #global noExifFileCopyNumber
     try:
         exif = Image.open(path)._getexif()
         if not exif:
